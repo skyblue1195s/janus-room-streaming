@@ -1,0 +1,99 @@
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/6.0.3/adapter.min.js" ></script>
+<script src="https://cdn.webrtc-experiment.com/MediaStreamRecorder.js"></script>
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<style>
+.videoscreen {
+margin:5px;border:1px solid grey;height:300px;width:300px;display:inline-block;vertical-align:top;
+}
+</style>
+<div>Username : <span id="username"></span></div>
+<button type="button" id="register">Join</button>
+<button type="button" id="stop">Quit</button>
+<button type="button" id="sharescreen">Share screen</button>
+<button type="button" id="stopsharescreen">Stop share screen</button>
+<!-- <button type="button" id="startrecording">Start recording</button>
+<button type="button" id="stoprecording">Stop recording</button> -->
+<!-- <button type="button" id="start-recording">Start recording</button>
+<button type="button" id="stop-recording">Stop recording</button> -->
+<span id="recordStatus"></span>
+<button class="recordBtn" id="recordStart">Record</button>
+<button class="recordBtn" id="recordPause" disabled>Pause Record</button>
+<button class="recordBtn" id="recordStop" disabled>Stop Record</button>
+<!-- <button class="recordBtn" id="recordPlay" disabled>Play</button>
+<button class="recordBtn" id="recordSave" disabled>Save</button> -->
+
+
+<button class="newLiveBtn" id="newLiveStart">Livestreaming</button>
+<button class="newLiveBtn" id="newLiveStop" disabled>Stop Livestreaming</button>
+<hr>
+
+<div>
+<div style="width:500px;">
+  <div id="volume-meter-0" style="height:5px;width:50%;background-color:green;"></div>
+</div>
+<div class="videoscreen" id="videolocal">videolocal</div>
+<div class="videoscreen" id="videoremote1">videoremote1</div>
+<div class="videoscreen" id="videoremote2">videoremote2</div>
+<div class="videoscreen" id="videoremote3">videoremote3</div>
+<div class="videoscreen" id="videoremote4">videoremote4</div>
+</div>
+<div>
+  <video controls playsinline autoplay hidden id="recordPlayback"></video>
+</div>
+<hr>
+<h1>Recorded list</h1>
+<div class="videoscreen" id="videoplayback">videolocal</div>
+<br><button type="button" id="getrecordedlist">Get recorded list</button>
+<div id="recordedlist"></div>
+<hr>
+<h1>Chat</h1>
+<div id="chatbox"></div>
+<input id="chatinput"/><button id="chatsend">Send</button>
+
+<script type="text/javascript" src="bundle.js" ></script>
+
+<!-- <script>
+var multiStreamRecorder;
+var audioVideoBlobs = {};
+var recordingInterval = 0;
+
+function captureUserMedia(mediaConstraints, successCallback, errorCallback) {
+                navigator.mediaDevices.getUserMedia(mediaConstraints).then(successCallback).catch(errorCallback);
+            }
+
+            var mediaConstraints = {
+                audio: true,
+                video: true
+            };
+
+const startNewLive = document.getElementById('newLiveStart');
+
+startNewLive.addEventListener('click', async ()=> {
+                // this.disabled = true;
+                // captureUserMedia(mediaConstraints, onMediaSuccess, onMediaError);
+                captureUserMedia(mediaConstraints, onMediaSuccess, onMediaError);
+
+                multiStreamRecorder = new MultiStreamRecorder([]);
+                multiStreamRecorder.start(1000);
+                multiStreamRecorder.ondataavailable = function(blob) {
+                        // appendLink(blob);
+                        console.log('handle data')
+                        console.log(blob)
+};
+});
+
+function onMediaSuccess(stream) {
+              multiStreamRecorder = new MultiStreamRecorder([stream]);
+              multiStreamRecorder.ondataavailable = function(blob) {
+                        console.log(blob);
+                    };
+              multiStreamRecorder.start(1000)
+
+            }
+
+            function onMediaError(e) {
+                console.error('media error', e);
+            }
+
+
+</script> -->
