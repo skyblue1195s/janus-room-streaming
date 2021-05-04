@@ -1,16 +1,23 @@
 {
-  "name": "janus-room",
+  "name": "@sky-blue/janus-room-video-streaming",
   "version": "0.1.54",
-  "description": "",
+  "description": "A Janus client library that provides simple interface to create a minimal-complete conference video room. This is adopted from Janus demo example code but it's JQuery-less and React/Vue friendly.",
   "main": "src.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "./node_modules/.bin/browserify example.js -o bundle.js"
+    "build": "browserify example.js -o bundle.js"
   },
   "author": "Herpiko Dwi Aguno <herpiko@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "browserify": "^16.2.3",
     "volume-meter-skip": "^2.0.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/skyblue1195s/janus-room-streaming"
+  },
+  "keywords": [
+    "janus"
+  ]
 }
