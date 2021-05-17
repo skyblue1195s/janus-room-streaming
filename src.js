@@ -667,7 +667,7 @@ function newRemoteFeed(id, display, audio, video) {
               addSimulcastButtons(remoteFeed.rfindex, remoteFeed.videoCodec === "vp8");
             }
             // We just received notice that there's been a switch, update the buttons
-            this.updateSimulcastButtons(remoteFeed.rfindex, substream, temporal);
+            updateSimulcastButtons(remoteFeed.rfindex, substream, temporal);
           }
         } else {
           // What has just happened?
@@ -1241,7 +1241,7 @@ class Room {
 // Helpers to create Simulcast-related UI, if enabled
 function addSimulcastButtons(feed, temporal) {
   var index = feed;
-  $('#remote' + index).parent().append(
+  $('#videoremote' + index).parent().append(
     '<div id="simulcast' + index + '" class="btn-group-vertical btn-group-vertical-xs pull-right">' +
     '	<div class"row">' +
     '		<div class="btn-group btn-group-xs" style="width: 100%">' +
