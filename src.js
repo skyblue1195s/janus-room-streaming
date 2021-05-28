@@ -640,7 +640,7 @@ function newRemoteFeed(id, display, audio, video) {
       } else if (event != undefined && event != null) {
         if (event === "attached") {
           // Subscriber created and attached
-          for (var i = 1; i < 6; i++) {
+          for (var i = 1; i < 8; i++) {
             if (config.feeds[i] === undefined || config.feeds[i] === null) {
               config.feeds[i] = remoteFeed;
               remoteFeed.rfindex = i;
