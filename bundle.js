@@ -4645,6 +4645,7 @@ function start() {
       config.janus = new Janus({
         server: config.server,
         token: config.token,
+        pin: config.pin,
         success: function () {
 
           // Attach to video room plugin
@@ -5230,6 +5231,7 @@ class Room {
     }
     window.remotestreams = config.remotestreams;
     // Assign the values
+    config.pin = options.pin;
     config.server = options.server || null;
     config.opaqueId = "videoroomtest-" + Janus.randomString(12);
     config.room = options.room || null;
@@ -5310,6 +5312,7 @@ class Room {
 
         var register = {
           "request": "join",
+          "pin": config.pin,
           "room": config.room,
           "ptype": "publisher",
           "display": config.username
