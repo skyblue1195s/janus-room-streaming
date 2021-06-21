@@ -266,7 +266,7 @@ function start() {
                         config.recordPlayHandler.send({
                           'message': {
                             'request': 'configure',
-                            'video-bitrate-max': bandwidth, // Reduce the bitrate
+                            'video-bitrate-max': bandwidth > 720 ? 720 : bandwidth, // Reduce the bitrate
                             'video-keyframe-interval': 15000 // Keep the 15 seconds key frame interval
                           }
                         });
@@ -480,7 +480,7 @@ function start() {
                             config.recordPlayHandler.send({
                               'message': {
                                 'request': 'configure',
-                                'video-bitrate-max': bandwidth, // Reduce the bitrate
+                                'video-bitrate-max': bandwidth > 720 ? 720 : bandwidth, // Reduce the bitrate
                                 'video-keyframe-interval': 15000 // Keep the 15 seconds key frame interval
                               }
                             });
