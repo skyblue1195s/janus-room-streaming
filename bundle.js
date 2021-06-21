@@ -4539,7 +4539,7 @@ function unpublishOwnFeed() {
         resolve();
       },
       error: function (err) {
-        reject(err);
+        // // reject(err);
       }
     });
   });
@@ -4627,7 +4627,7 @@ function stopPlayback() {
         resolve();
       },
       error: function (err) {
-        reject(err);
+        // // reject(err);
       }
     });
   });
@@ -4985,7 +4985,7 @@ function start() {
           if (config.videoRoomHandler) config.videoRoomHandler.alive = false;
           Janus.error(error);
           config.onError(error);
-          reject(error);
+          // reject(error);
         },
         destroyed: function () {
           console.log('Destroyed');
@@ -4993,7 +4993,7 @@ function start() {
         iceServers: config.iceServers,
       });
     } catch (err) {
-      reject(err);
+      // reject(err);
     }
   });
 }
@@ -5023,7 +5023,7 @@ function getRecorder() {
 };
 
 function videoDataHandler(event) {
-  console.log(event.data)
+  // console.log(event.data)
   // var reader = new FileReader();
   // reader.readAsArrayBuffer(event.data);
   // videoCounter++;
@@ -5272,12 +5272,12 @@ class Room {
                 resolve();
               })
               .catch((err) => {
-                reject(err);
+                // reject(err);
               });
           }
         });
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
@@ -5334,7 +5334,7 @@ class Room {
         });
         resolve();
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
@@ -5351,7 +5351,7 @@ class Room {
         }
         resolve(config.videoRoomHandler.isAudioMuted());
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
@@ -5368,7 +5368,7 @@ class Room {
         }
         resolve(config.videoRoomHandler.isVideoMuted());
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
@@ -5378,7 +5378,7 @@ class Room {
       let videoStopped = false;
       let audioStopped = false;
       if (!config.mystream) {
-        reject('No local stream.');
+        // reject('No local stream.');
         return;
       } else {
         if (config.mystream.getVideoTracks().length > 0) {
@@ -5415,11 +5415,11 @@ class Room {
             resolve(data);
           },
           error: function (err) {
-            reject(err);
+            // reject(err);
           },
         });
       } catch (err) {
-        reject(err)
+        // reject(err)
       }
     });
   }
@@ -5438,7 +5438,7 @@ class Room {
         }
         resolve();
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
@@ -5465,7 +5465,7 @@ class Room {
         }
         resolve(res)
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
@@ -5476,7 +5476,7 @@ class Room {
         Janus.attachMediaStream(target, config.recordedplaystream);
         resolve();
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
@@ -5484,24 +5484,24 @@ class Room {
   shareScreen() {
     return new Promise((resolve, reject) => {
       if (Janus.webRTCAdapter.browserDetails.browser === 'safari') {
-        reject(new Error('No video support for Safari browser.'));
+        // reject(new Error('No video support for Safari browser.'));
       }
       if (!config.publishOwnFeed) {
-        return reject();
+        return // reject();
       }
       try {
         unpublishOwnFeed()
         setTimeout(() => {
           shareScreen((err) => {
             if (err) {
-              reject(err)
+              // reject(err)
               return;
             }
             resolve();
           });
         }, 500);
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
@@ -5509,7 +5509,7 @@ class Room {
   stopShareScreen() {
     return new Promise((resolve, reject) => {
       if (!config.publishOwnFeed) {
-        return reject();
+        return // reject();
       }
       try {
         unpublishOwnFeed()
@@ -5523,7 +5523,7 @@ class Room {
           });
         }, 500);
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
@@ -5557,7 +5557,7 @@ class Room {
         // TODO catch the response
         resolve();
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
@@ -5576,7 +5576,7 @@ class Room {
         });
         resolve();
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
@@ -5593,7 +5593,7 @@ class Room {
           resolve(result);
         },
         error: function (err) {
-          reject(err);
+          // reject(err);
         }
       });
     });
@@ -5625,12 +5625,12 @@ class Room {
                 resolve();
               },
               error: function (err) {
-                reject(err);
+                // reject(err);
               }
             });
           })
           .catch((err) => {
-            reject(err);
+            // reject(err);
           });
       } else {
         config.recordPlayHandler.send({
@@ -5639,7 +5639,7 @@ class Room {
             resolve();
           },
           error: function (err) {
-            reject(err);
+            // reject(err);
           }
         });
       }
@@ -5662,7 +5662,7 @@ class Room {
   //           resolve();
   //         },
   //         error: function(err) {
-  //           reject(err);
+  //           // reject(err);
   //         }
   //       });
   //     }
@@ -5677,11 +5677,11 @@ class Room {
           if (config.remotestreams[streamIndex]) {
             resolve(config.remotestreams[streamIndex].stream);
           } else {
-            reject(new Error('No such stream index: ' + streamIndex));
+            // reject(new Error('No such stream index: ' + streamIndex));
           }
         }
       } catch (e) {
-        reject(e);
+        // reject(e);
       }
     });
   }
@@ -5693,10 +5693,10 @@ class Room {
         } else if (config.videoRoomHandler && '' + streamIndex === '0') {
           resolve(config.videoRoomHandler.alive ? true : false);
         } else {
-          reject(new Error('No such stream index: ' + streamIndex));
+          // reject(new Error('No such stream index: ' + streamIndex));
         }
       } catch (e) {
-        reject(e);
+        // reject(e);
       }
     });
   }
