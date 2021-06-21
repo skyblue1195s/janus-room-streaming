@@ -40,8 +40,8 @@ function publishOwnFeed(opts, cb) {
     }, // Publishers are sendonly
     simulcast: doSimulcast,
     success: function (jsep) {
-      Janus.debug("Got publisher SDP!");
-      Janus.debug(jsep);
+      // Janus.debug("Got publisher SDP!");
+      // Janus.debug(jsep);
       var publish = {
         "request": "configure",
         "audio": opts.audioSend,
@@ -103,8 +103,8 @@ function shareScreen(cb) {
       data: true,
     }, // Publishers are sendonly
     success: function (jsep) {
-      Janus.debug("Got publisher SDP!");
-      Janus.debug(jsep);
+      // Janus.debug("Got publisher SDP!");
+      // Janus.debug(jsep);
       var publish = {
         "request": "configure",
         "audio": true,
@@ -142,8 +142,8 @@ function startRecording(options) {
     // the following 'simulcast' property to pass to janus.js to true
     simulcast: doSimulcast,
     success: function (jsep) {
-      Janus.debug("Got SDP!");
-      Janus.debug(jsep);
+      // Janus.debug("Got SDP!");
+      // Janus.debug(jsep);
       var body = {
         "request": "record",
         "name": options.name || 'janus-room-test-' + (new Date()).valueOf(),
@@ -208,7 +208,7 @@ function start() {
               config.onError("Error attaching plugin... " + error);
             },
             consentDialog: function (on) {
-              Janus.debug("Consent dialog should be " + (on ? "on" : "off") + " now");
+              // Janus.debug("Consent dialog should be " + (on ? "on" : "off") + " now");
               if (on) {
                 // Darken screen and show hint
               } else {
@@ -223,13 +223,13 @@ function start() {
               Janus.log("Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
             },
             onmessage: function (msg, jsep) {
-              Janus.debug(" ::: Got a message (publisher) :::");
-              Janus.debug(msg);
-              Janus.debug(jsep);
+              // Janus.debug(" ::: Got a message (publisher) :::");
+              // Janus.debug(msg);
+              // Janus.debug(jsep);
               config.videoRoomHandler.alive = true;
 
               var event = msg["videoroom"];
-              Janus.debug("Event: " + event);
+              // Janus.debug("Event: " + event);
               if (event != undefined && event != null) {
                 if (event === "joined" && !config.isShareScreenActive) {
                   // Publisher/manager created, negotiate WebRTC and attach to existing feeds, if any
@@ -244,14 +244,14 @@ function start() {
                   // Any new feed to attach to?
                   if (msg["publishers"] !== undefined && msg["publishers"] !== null) {
                     var list = msg["publishers"];
-                    Janus.debug("Got a list of available publishers/feeds:");
-                    Janus.debug(list);
+                    // Janus.debug("Got a list of available publishers/feeds:");
+                    // Janus.debug(list);
                     for (var f in list) {
                       var id = list[f]["id"];
                       var display = list[f]["display"];
                       var audio = list[f]["audio_codec"];
                       var video = list[f]["video_codec"];
-                      Janus.debug("  >> [" + id + "] " + display + " (audio: " + audio + ", video: " + video + ")");
+                      // Janus.debug("  >> [" + id + "] " + display + " (audio: " + audio + ", video: " + video + ")");
                       newRemoteFeed(id, display, audio, video);
                     }
                   }
@@ -281,14 +281,14 @@ function start() {
                   // Any new feed to attach to?
                   if (msg["publishers"] !== undefined && msg["publishers"] !== null) {
                     var list = msg["publishers"];
-                    Janus.debug("Got a list of available publishers/feeds:");
-                    Janus.debug(list);
+                    // Janus.debug("Got a list of available publishers/feeds:");
+                    // Janus.debug(list);
                     for (var f in list) {
                       var id = list[f]["id"];
                       var display = list[f]["display"];
                       var audio = list[f]["audio_codec"];
                       var video = list[f]["video_codec"];
-                      Janus.debug("  >> [" + id + "] " + display + " (audio: " + audio + ", video: " + video + ")");
+                      // Janus.debug("  >> [" + id + "] " + display + " (audio: " + audio + ", video: " + video + ")");
                       newRemoteFeed(id, display, audio, video);
                     }
                   } else if (msg["leaving"] !== undefined && msg["leaving"] !== null) {
@@ -303,7 +303,7 @@ function start() {
                       }
                     }
                     if (remoteFeed != null) {
-                      Janus.debug("Feed " + remoteFeed.rfid + " (" + remoteFeed.rfdisplay + ") has left the room, detaching");
+                      // Janus.debug("Feed " + remoteFeed.rfid + " (" + remoteFeed.rfdisplay + ") has left the room, detaching");
                       config.feeds[remoteFeed.rfindex] = null;
                       remoteFeed.detach();
                     }
@@ -324,7 +324,7 @@ function start() {
                       }
                     }
                     if (remoteFeed != null) {
-                      Janus.debug("Feed " + remoteFeed.rfid + " (" + remoteFeed.rfdisplay + ") has left the room, detaching");
+                      // Janus.debug("Feed " + remoteFeed.rfid + " (" + remoteFeed.rfdisplay + ") has left the room, detaching");
                       config.feeds[remoteFeed.rfindex] = null;
                       remoteFeed.detach();
                     }
@@ -338,8 +338,8 @@ function start() {
                 }
               }
               if (jsep !== undefined && jsep !== null) {
-                Janus.debug("Handling SDP as well...");
-                Janus.debug(jsep);
+                // Janus.debug("Handling SDP as well...");
+                // Janus.debug(jsep);
                 config.videoRoomHandler.handleRemoteJsep({
                   jsep: jsep
                 });
@@ -348,18 +348,18 @@ function start() {
                 var audio = msg["audio_codec"];
                 if (config.mystream && config.mystream.getAudioTracks() && config.mystream.getAudioTracks().length > 0 && !audio) {
                   // Audio has been rejected
-                  Janus.debug("Our audio stream has been rejected, viewers won't hear us");
+                  // Janus.debug("Our audio stream has been rejected, viewers won't hear us");
                 }
                 var video = msg["video_codec"];
                 if (config.mystream && config.mystream.getVideoTracks() && config.mystream.getVideoTracks().length > 0 && !video) {
                   // Video has been rejected
-                  Janus.debug("Our video stream has been rejected, viewers won't see us");
+                  // Janus.debug("Our video stream has been rejected, viewers won't see us");
                   // Hide the webcam video
                 }
               }
             },
             onlocalstream: function (stream) {
-              Janus.debug(" ::: Got a local stream :::");
+              // Janus.debug(" ::: Got a local stream :::");
               config.mystream = window.mystream = stream; // attach to global for debugging purpose
               if (config.mystream.getVideoTracks().length > 0) {
                 config.mystream.getVideoTracks()[0].onended = function () {
@@ -374,7 +374,7 @@ function start() {
                   }
                 }
               }
-              Janus.debug(stream);
+              // Janus.debug(stream);
               config.onLocalJoin();
               if (config.onVolumeMeterUpdate) {
                 let ctx = new AudioContext();
@@ -423,8 +423,8 @@ function start() {
                 Janus.log("Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
               },
               onmessage: function (msg, jsep) {
-                Janus.debug(" ::: Got a message :::");
-                Janus.debug(msg);
+                // Janus.debug(" ::: Got a message :::");
+                // Janus.debug(msg);
                 config.videoRoomHandler.alive = true;
                 var result = msg["result"];
                 if (result !== null && result !== undefined) {
@@ -439,8 +439,8 @@ function start() {
                           videoSend: false
                         }, // We want recvonly audio/video
                         success: function (jsep) {
-                          Janus.debug("Got SDP!");
-                          Janus.debug(jsep);
+                          // Janus.debug("Got SDP!");
+                          // Janus.debug(jsep);
                           var body = {
                             "request": "start"
                           };
@@ -508,14 +508,14 @@ function start() {
                 }
               },
               onlocalstream: function (stream) {
-                Janus.debug(" ::: Got a local stream :::");
-                Janus.debug(stream);
+                // Janus.debug(" ::: Got a local stream :::");
+                // Janus.debug(stream);
                 config.onRecordedPlay()
               },
               onremotestream: function (stream) {
                 config.recordedplaystream = stream;
-                Janus.debug(" ::: Got a remote stream :::");
-                Janus.debug(stream);
+                // // Janus.debug(" ::: Got a remote stream :::");
+                // // Janus.debug(stream);
                 config.onRecordedPlay()
               },
               oncleanup: function () {
@@ -608,7 +608,7 @@ function newRemoteFeed(id, display, audio, video) {
         if (video) {
           video = video.toUpperCase()
         }
-        Janus.debug("Publisher is using " + video + ", but Safari doesn't support it: disabling video");
+        // // Janus.debug("Publisher is using " + video + ", but Safari doesn't support it: disabling video");
         listen["offer_video"] = false;
       }
       listen["offer_data"] = true;
@@ -632,11 +632,11 @@ function newRemoteFeed(id, display, audio, video) {
       config.onError("Error attaching plugin... " + error);
     },
     onmessage: function (msg, jsep) {
-      Janus.debug(" ::: Got a message (subscriber) :::");
-      Janus.debug(msg);
+      // // Janus.debug(" ::: Got a message (subscriber) :::");
+      // // Janus.debug(msg);
       config.videoRoomHandler.alive = true;
       var event = msg["videoroom"];
-      Janus.debug("Event: " + event);
+      // Janus.debug("Event: " + event);
       if (msg["error"] !== undefined && msg["error"] !== null) {
         config.onError(msg["error"]);
       } else if (event != undefined && event != null) {
@@ -676,8 +676,8 @@ function newRemoteFeed(id, display, audio, video) {
         }
       }
       if (jsep !== undefined && jsep !== null) {
-        Janus.debug("Handling SDP as well...");
-        Janus.debug(jsep);
+        // Janus.debug("Handling SDP as well...");
+        // Janus.debug(jsep);
         // Answer and attach
         remoteFeed.createAnswer({
           jsep: jsep,
@@ -689,8 +689,8 @@ function newRemoteFeed(id, display, audio, video) {
             data: true,
           }, // We want recvonly audio/video
           success: function (jsep) {
-            Janus.debug("Got SDP!");
-            Janus.debug(jsep);
+            // Janus.debug("Got SDP!");
+            // Janus.debug(jsep);
             var body = {
               "request": "start",
               "room": config.room
@@ -725,7 +725,7 @@ function newRemoteFeed(id, display, audio, video) {
       }
     },
     onremotestream: function (stream) {
-      Janus.debug("Remote feed #" + remoteFeed.rfindex);
+      // Janus.debug("Remote feed #" + remoteFeed.rfindex);
 
       config.remotestreams[remoteFeed.rfindex] = {}
       config.remotestreams[remoteFeed.rfindex].index = remoteFeed.rfindex;
@@ -1131,7 +1131,7 @@ class Room {
       var body = {
         "request": "list"
       };
-      Janus.debug("Sending message (" + JSON.stringify(body) + ")");
+      // Janus.debug("Sending message (" + JSON.stringify(body) + ")");
       config.recordPlayHandler.send({
         "message": body,
         success: function (result) {
