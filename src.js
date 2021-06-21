@@ -595,6 +595,7 @@ function newRemoteFeed(id, display, audio, video) {
         "room": config.room,
         "ptype": "subscriber",
         "feed": id,
+        "pin": config.pin,
         "private_id": config.mypvtid
       };
       if (config.token) listen.token = config.token;
@@ -778,7 +779,7 @@ class Room {
     // Assign the values
     config.pin = options.pin;
     config.server = options.server || null;
-    config.opaqueId = "videoroomtest-" + Janus.randomString(12);
+    config.opaqueId = "videoroomtest-" + this.randomString(12);
     config.room = options.room || null;
     config.publishOwnFeed = options.publishOwnFeed || false;
     config.extensionId = options.extensionId || null;
@@ -825,6 +826,16 @@ class Room {
       }
     });
   }
+
+  randomString(len) {
+    var charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var randomString = '';
+    for (var i = 0; i < len; i++) {
+      var randomPoz = Math.floor(Math.random() * charSet.length);
+      randomString += charSet.substring(randomPoz, randomPoz + 1);
+    }
+    return randomString;
+  };
 
   stop() {
     if (config.janus) {
