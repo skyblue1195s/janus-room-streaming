@@ -839,7 +839,7 @@ class Room {
 
   stop() {
     if (config.janus) {
-      this.stopRecording();
+      // this.stopRecording();
       // Make sure the webcam and microphone got turned off first
       if (config.mystream) {
         let tracks = config.mystream.getTracks();
