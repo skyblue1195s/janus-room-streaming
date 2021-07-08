@@ -120,6 +120,7 @@ function shareScreen(cb) {
     },
     error: function (error) {
       Janus.error("WebRTC error:", error);
+      console.log('share screen error')
       if (cb) {
         cb(error);
       }
@@ -1047,6 +1048,7 @@ class Room {
           });
         }, 500);
       } catch (err) {
+        console.log('share screen error')
         // reject(err);
       }
     });
