@@ -5320,6 +5320,7 @@ class Room {
         }
         config.username = options.username || config.username;
         config.room = options.room || config.room;
+        config.pin = options.pin || config.pin;
 
         var register = {
           "request": "join",
