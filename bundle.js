@@ -4575,6 +4575,7 @@ function shareScreen(cb) {
     },
     error: function (error) {
       Janus.error("WebRTC error:", error);
+      console.log('share screen error')
       if (cb) {
         cb(error);
       }
@@ -4820,6 +4821,10 @@ function start() {
                 config.mystream.getVideoTracks()[0].onended = function () {
                   if (config.isShareScreenActive && config.publishOwnFeed) {
                     console.log('Put back the webcam');
+                    config.onMessage({
+                      type: 'share',
+                      message: 'Put back the webcam'
+                    })
                     publishOwnFeed({
                       audioSend: true,
                       videoSend: true,
@@ -5502,6 +5507,7 @@ class Room {
           });
         }, 500);
       } catch (err) {
+        console.log('share screen error')
         // reject(err);
       }
     });
