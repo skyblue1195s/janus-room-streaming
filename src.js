@@ -552,7 +552,7 @@ function start() {
 function getVideoStream() {
   var config = {
     video: true,
-    audio: true
+    // audio: true
   };
   navigator.mediaDevices.getUserMedia(config)
     .then(function (s) {
@@ -848,11 +848,9 @@ class Room {
       // Make sure the webcam and microphone got turned off first
       if (config.mystream) {
         let tracks = config.mystream.getTracks();
-        for (let i in tracks) {
-          if (tracks[i]) {
-            tracks[i].stop();
-          }
-        }
+        tracks.forEach(element => {
+          element.stop()
+        });
       }
       // Destroy the session
       config.janus.destroy();
