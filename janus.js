@@ -238,12 +238,12 @@ Janus.init = function (options) {
 		Janus.error = Janus.noop;
 		if (options.debug === true || options.debug === "all") {
 			// Enable all debugging levels
-			Janus.trace = console.trace.bind(console);
-			Janus.debug = console.debug.bind(console);
-			Janus.vdebug = console.debug.bind(console);
-			Janus.log = console.log.bind(console);
-			Janus.warn = console.warn.bind(console);
-			Janus.error = console.error.bind(console);
+			// Janus.trace = console.trace.bind(console);
+			// Janus.debug = console.debug.bind(console);
+			// Janus.vdebug = console.debug.bind(console);
+			// Janus.log = console.log.bind(console);
+			// Janus.warn = console.warn.bind(console);
+			// Janus.error = console.error.bind(console);
 		} else if (Array.isArray(options.debug)) {
 			for (var d of options.debug) {
 				switch (d) {
