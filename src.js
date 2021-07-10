@@ -99,7 +99,7 @@ function shareScreen(cb) {
       videoRecv: false,
       audioSend: true,
       videoSend: true,
-      captureDesktopAudio: true,
+      // captureDesktopAudio: true,
       data: true,
     }, // Publishers are sendonly
     success: function (jsep) {
