@@ -1112,6 +1112,23 @@ class Room {
     });
   }
 
+  leavingRoom() {
+    return new Promise((resolve, reject) => {
+      try {
+        var body = {
+          "request": "leave",
+        };
+        if (config.token) body.token = config.token;
+        config.videoRoomHandler.send({
+          "message": body,
+        });
+        resolve();
+      } catch (err) {
+        // reject(err);
+      }
+    });
+  }
+
   removeRoom() {
     return new Promise((resolve, reject) => {
       try {
