@@ -844,7 +844,6 @@ class Room {
 
   stop() {
     if (config.janus) {
-      this.leavingRoom()
       // this.stopRecording();
       // Make sure the webcam and microphone got turned off first
       if (config.mystream) {
@@ -853,6 +852,7 @@ class Room {
           element.stop()
         });
       }
+      this.leavingRoom()
       // Destroy the session
       config.janus.destroy();
     }
