@@ -191,6 +191,8 @@ function start() {
         server: config.server,
         token: config.token,
         pin: config.pin,
+        iceServers: config.iceServers,
+
         success: function () {
 
           // Attach to video room plugin
@@ -539,7 +541,6 @@ function start() {
         destroyed: function () {
           console.log('Destroyed');
         },
-        iceServers: config.iceServers,
       });
     } catch (err) {
       // reject(err);
@@ -801,8 +802,14 @@ class Room {
     config.onError = options.onError || null;
     config.onWarning = options.onWarning || null;
     config.iceServers = options.iceServers || [{
-      urls: "stun:stun.l.google.com:19302"
-    }];
+        urls: "stun:stun.l.google.com:19302"
+      },
+      {
+        url: "turn:52.64.84.10:3478",
+        username: "test",
+        credential: "Demo@123"
+      }
+    ];
   }
 
 
