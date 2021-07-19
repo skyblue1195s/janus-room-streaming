@@ -34,7 +34,7 @@ function publishOwnFeed(opts, cb) {
       videoRecv: false,
       audioSend: opts.audioSend,
       replaceAudio: opts.replaceAudio,
-      videoSend: Janus.webRTCAdapter.browserDetails.browser === 'safari' ? false : (opts.videoSend ? opts.videoSend : false),
+      videoSend: Janus.webRTCAdapter.browserDetails.browser === 'safari' ? false : opts.videoSend,
       replaceVideo: opts.replaceVideo,
       data: true,
     }, // Publishers are sendonly
@@ -45,7 +45,7 @@ function publishOwnFeed(opts, cb) {
       var publish = {
         "request": "configure",
         "audio": opts.audioSend,
-        "video": Janus.webRTCAdapter.browserDetails.browser === 'safari' ? false : (opts.videoSend ? opts.videoSend : false),
+        "video": Janus.webRTCAdapter.browserDetails.browser === 'safari' ? false : true,
         "data": true,
       };
       if (config.token) publish.token = config.token;
@@ -99,7 +99,7 @@ function shareScreen(cb) {
       videoRecv: false,
       audioSend: true,
       videoSend: true,
-      // captureDesktopAudio: true,
+      captureDesktopAudio: true,
       data: true,
     }, // Publishers are sendonly
     success: function (jsep) {
@@ -120,6 +120,7 @@ function shareScreen(cb) {
     },
     error: function (error) {
       Janus.error("WebRTC error:", error);
+      console.log('share screen error')
       if (cb) {
         cb(error);
       }
@@ -191,8 +192,6 @@ function start() {
         server: config.server,
         token: config.token,
         pin: config.pin,
-        iceServers: config.iceServers,
-
         success: function () {
 
           // Attach to video room plugin
@@ -229,6 +228,7 @@ function start() {
               // Janus.debug(msg);
               // Janus.debug(jsep);
               config.videoRoomHandler.alive = true;
+
               var event = msg["videoroom"];
               // Janus.debug("Event: " + event);
               if (event != undefined && event != null) {
@@ -239,8 +239,7 @@ function start() {
                   Janus.log("Successfully joined room " + msg["room"] + " with ID " + config.myid);
                   if (config.publishOwnFeed) {
                     publishOwnFeed({
-                      audioSend: true,
-                      videoSend: config.video
+                      audioSend: true
                     });
                   }
                   // Any new feed to attach to?
@@ -541,6 +540,7 @@ function start() {
         destroyed: function () {
           console.log('Destroyed');
         },
+        iceServers: config.iceServers,
       });
     } catch (err) {
       // reject(err);
@@ -552,7 +552,7 @@ function start() {
 function getVideoStream() {
   var config = {
     video: true,
-    // audio: true
+    audio: true
   };
   navigator.mediaDevices.getUserMedia(config)
     .then(function (s) {
@@ -731,11 +731,12 @@ function newRemoteFeed(id, display, audio, video) {
     },
     onremotestream: function (stream) {
       // Janus.debug("Remote feed #" + remoteFeed.rfindex);
+
       config.remotestreams[remoteFeed.rfindex] = {}
       config.remotestreams[remoteFeed.rfindex].index = remoteFeed.rfindex;
       config.remotestreams[remoteFeed.rfindex].feedId = remoteFeed.getId();
       config.remotestreams[remoteFeed.rfindex].stream = stream;
-      config.onRemoteJoin(remoteFeed.rfindex, remoteFeed.rfdisplay, remoteFeed.getId(), remoteFeed.isRemoteVideoMuted());
+      config.onRemoteJoin(remoteFeed.rfindex, remoteFeed.rfdisplay, remoteFeed.getId());
       if (config.onVolumeMeterUpdate) {
         let ctx = new AudioContext();
         let meter = volumeMeter(ctx, {
@@ -782,7 +783,6 @@ class Room {
     window.remotestreams = config.remotestreams;
     // Assign the values
     config.pin = options.pin;
-    config.video = options.video || true;
     config.server = options.server || null;
     config.opaqueId = "videoroomtest-" + this.randomString(12);
     config.room = options.room || null;
@@ -802,14 +802,8 @@ class Room {
     config.onError = options.onError || null;
     config.onWarning = options.onWarning || null;
     config.iceServers = options.iceServers || [{
-        urls: "stun:stun.l.google.com:19302"
-      },
-      {
-        url: "turn:52.64.84.10:3478",
-        username: "test",
-        credential: "Demo@123"
-      }
-    ];
+      urls: "stun:stun.l.google.com:19302"
+    }];
   }
 
 
@@ -854,10 +848,11 @@ class Room {
       // Make sure the webcam and microphone got turned off first
       if (config.mystream) {
         let tracks = config.mystream.getTracks();
-        console.log(tracks);
-        tracks.forEach(element => {
-          element.stop()
-        });
+        for (let i in tracks) {
+          if (tracks[i]) {
+            tracks[i].stop();
+          }
+        }
       }
       this.leavingRoom()
       // Destroy the session
@@ -877,7 +872,6 @@ class Room {
         config.username = options.username || config.username;
         config.room = options.room || config.room;
         config.pin = options.pin || config.pin;
-        config.video = options.video === 'false' ? false : true;
 
         var register = {
           "request": "join",
@@ -886,7 +880,6 @@ class Room {
           "ptype": "publisher",
           "display": config.username
         };
-        console.log(config);
         if (config.token) register.token = config.token;
         config.videoRoomHandler.send({
           "message": register
@@ -934,21 +927,20 @@ class Room {
 
   toggleVideo() {
     return new Promise((resolve, reject) => {
-      let videoStopped = true;
-      let audioStopped = true;
+      let videoStopped = false;
+      let audioStopped = false;
       if (!config.mystream) {
         // reject('No local stream.');
         return;
       } else {
         if (config.mystream.getVideoTracks().length > 0) {
-          console.log(config.mystream.getVideoTracks()[0]);
           videoStopped = config.mystream.getVideoTracks()[0].readyState === 'ended';
         }
         if (config.mystream.getAudioTracks().length > 0) {
           audioStopped = config.mystream.getAudioTracks()[0].readyState === 'ended';
         }
       }
-      if (!videoStopped && config.mystream.getVideoTracks().length > 0) {
+      if (!videoStopped) {
         config.mystream.getVideoTracks()[0].stop();
       }
       if (config.publishOwnFeed) {
