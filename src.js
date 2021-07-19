@@ -431,6 +431,7 @@ function start() {
               onmessage: function (msg, jsep) {
                 // Janus.debug(" ::: Got a message :::");
                 // Janus.debug(msg);
+                console.log('---------message--------'), msg;
                 config.videoRoomHandler.alive = true;
                 var result = msg["result"];
                 if (result !== null && result !== undefined) {
@@ -476,23 +477,24 @@ function start() {
                         config.recordingId = id;
                       }
                     } else if (event === 'slow_link') {
-                      if (result) {
-                        var uplink = result["uplink"];
-                        if (uplink !== 0) {
-                          if (config.onWarning) config.onWarning(msg);
-                          // Janus detected issues when receiving our media, let's slow down
-                          if (!config.isShareScreenActive) {
-                            let bandwidth = parseInt(bandwidth / 1.5);
-                            config.recordPlayHandler.send({
-                              'message': {
-                                'request': 'configure',
-                                'video-bitrate-max': bandwidth > 720 ? 720 : bandwidth, // Reduce the bitrate
-                                'video-keyframe-interval': 15000 // Keep the 15 seconds key frame interval
-                              }
-                            });
-                          }
+                      // if (result) {
+                      // var uplink = result["uplink"];
+                      var uplink = 1;
+                      if (uplink !== 0) {
+                        if (config.onWarning) config.onWarning(msg);
+                        // Janus detected issues when receiving our media, let's slow down
+                        if (!config.isShareScreenActive) {
+                          let bandwidth = parseInt(bandwidth / 1.5);
+                          config.recordPlayHandler.send({
+                            'message': {
+                              'request': 'configure',
+                              'video-bitrate-max': 480, // Reduce the bitrate
+                              'video-keyframe-interval': 15000 // Keep the 15 seconds key frame interval
+                            }
+                          });
                         }
                       }
+                      // }
                     } else if (event === 'stopped' && result) {
                       Janus.log("Session has stopped!");
                       var id = result["id"];
