@@ -264,10 +264,11 @@ function start() {
                       // Janus detected issues when receiving our media, let's slow down
                       if (!config.isShareScreenActive) {
                         let bandwidth = parseInt(bandwidth / 1.5);
+                        console.log('------Bandwith', bandwidth)
                         config.recordPlayHandler.send({
                           'message': {
                             'request': 'configure',
-                            'video-bitrate-max': bandwidth > 720 ? 720 : bandwidth, // Reduce the bitrate
+                            'video-bitrate-max': 480, // Reduce the bitrate
                             'video-keyframe-interval': 15000 // Keep the 15 seconds key frame interval
                           }
                         });
