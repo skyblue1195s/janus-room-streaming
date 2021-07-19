@@ -257,8 +257,9 @@ function start() {
                     }
                   }
                 } else if (event === 'slow_link') {
-                  if (result) {
+                  // if (result) {
                     var uplink = result["uplink"];
+                    var uplink = 1;
                     if (uplink !== 0) {
                       if (config.onWarning) config.onWarning(msg);
                       // Janus detected issues when receiving our media, let's slow down
@@ -274,7 +275,7 @@ function start() {
                         });
                       }
                     }
-                  }
+                  // }
                 } else if (event === "destroyed") {
                   // The room has been destroyed
                   Janus.warn("The room has been destroyed!");
