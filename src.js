@@ -34,18 +34,18 @@ function publishOwnFeed(opts, cb) {
       videoRecv: false,
       audioSend: opts.audioSend,
       replaceAudio: opts.replaceAudio,
-      videoSend: Janus.webRTCAdapter.browserDetails.browser === 'safari' ? false : opts.videoSend,
+      videoSend: Janus.webRTCAdapter.browserDetails.browser === 'safari' ? false : (opts.videoSend ? opts.videoSend : false),
       replaceVideo: opts.replaceVideo,
       data: true,
     }, // Publishers are sendonly
     simulcast: doSimulcast,
     success: function (jsep) {
-      Janus.debug("Got publisher SDP!");
-      Janus.debug(jsep);
+      // Janus.debug("Got publisher SDP!");
+      // Janus.debug(jsep);
       var publish = {
         "request": "configure",
         "audio": opts.audioSend,
-        "video": Janus.webRTCAdapter.browserDetails.browser === 'safari' ? false : true,
+        "video": Janus.webRTCAdapter.browserDetails.browser === 'safari' ? false : (opts.videoSend ? opts.videoSend : false),
         "data": true,
       };
       if (config.token) publish.token = config.token;
@@ -84,13 +84,13 @@ function unpublishOwnFeed() {
         resolve();
       },
       error: function (err) {
-        reject(err);
+        // // reject(err);
       }
     });
   });
 }
 
-function shareScreen(cb) {
+function shareScreen(hasAudio, hasVideo, cb) {
   // Publish our stream
   config.videoRoomHandler.createOffer({
     // Add data:true here if you want to publish datachannels as well
@@ -99,21 +99,17 @@ function shareScreen(cb) {
       videoRecv: false,
       audioSend: true,
       videoSend: true,
-      captureDesktopAudio: true,
+      // captureDesktopAudio: true,
       data: true,
     }, // Publishers are sendonly
     success: function (jsep) {
-      Janus.debug("Got publisher SDP!");
-      Janus.debug(jsep);
+      // Janus.debug("Got publisher SDP!");
+      // Janus.debug(jsep);
       var publish = {
         "request": "configure",
         "audio": true,
         "video": true,
-        "data": true,
-        "descriptions": [{
-          "mid": "<unique mid of a stream being published>",
-          "description": "<text description of the stream (e.g., My front webcam)>"
-        }, ]
+        "data": true
       };
       if (config.token) publish.token = config.token;
       config.isShareScreenActive = true;
@@ -146,8 +142,8 @@ function startRecording(options) {
     // the following 'simulcast' property to pass to janus.js to true
     simulcast: doSimulcast,
     success: function (jsep) {
-      Janus.debug("Got SDP!");
-      Janus.debug(jsep);
+      // Janus.debug("Got SDP!");
+      // Janus.debug(jsep);
       var body = {
         "request": "record",
         "name": options.name || 'janus-room-test-' + (new Date()).valueOf(),
@@ -176,7 +172,7 @@ function stopPlayback() {
         resolve();
       },
       error: function (err) {
-        reject(err);
+        // // reject(err);
       }
     });
   });
@@ -212,7 +208,7 @@ function start() {
               config.onError("Error attaching plugin... " + error);
             },
             consentDialog: function (on) {
-              Janus.debug("Consent dialog should be " + (on ? "on" : "off") + " now");
+              // Janus.debug("Consent dialog should be " + (on ? "on" : "off") + " now");
               if (on) {
                 // Darken screen and show hint
               } else {
@@ -227,13 +223,12 @@ function start() {
               Janus.log("Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
             },
             onmessage: function (msg, jsep) {
-              Janus.debug(" ::: Got a message (publisher) :::");
-              Janus.debug(msg);
-              Janus.debug(jsep);
+              // Janus.debug(" ::: Got a message (publisher) :::");
+              // Janus.debug(msg);
+              // Janus.debug(jsep);
               config.videoRoomHandler.alive = true;
-
               var event = msg["videoroom"];
-              Janus.debug("Event: " + event);
+              // Janus.debug("Event: " + event);
               if (event != undefined && event != null) {
                 if (event === "joined" && !config.isShareScreenActive) {
                   // Publisher/manager created, negotiate WebRTC and attach to existing feeds, if any
@@ -242,41 +237,42 @@ function start() {
                   Janus.log("Successfully joined room " + msg["room"] + " with ID " + config.myid);
                   if (config.publishOwnFeed) {
                     publishOwnFeed({
-                      audioSend: true
+                      audioSend: true,
+                      videoSend: config.video
                     });
                   }
                   // Any new feed to attach to?
                   if (msg["publishers"] !== undefined && msg["publishers"] !== null) {
                     var list = msg["publishers"];
-                    Janus.debug("Got a list of available publishers/feeds:");
-                    Janus.debug(list);
+                    // Janus.debug("Got a list of available publishers/feeds:");
+                    // Janus.debug(list);
                     for (var f in list) {
                       var id = list[f]["id"];
                       var display = list[f]["display"];
                       var audio = list[f]["audio_codec"];
                       var video = list[f]["video_codec"];
-                      Janus.debug("  >> [" + id + "] " + display + " (audio: " + audio + ", video: " + video + ")");
+                      // Janus.debug("  >> [" + id + "] " + display + " (audio: " + audio + ", video: " + video + ")");
                       newRemoteFeed(id, display, audio, video);
                     }
                   }
                 } else if (event === 'slow_link') {
-                  // if (result) {
-                  // var uplink = result["uplink"];
-                  if (1) {
-                    if (config.onWarning) config.onWarning(msg);
-                    // Janus detected issues when receiving our media, let's slow down
-                    if (!config.isShareScreenActive) {
-                      // let bandwidth = parseInt(bandwidth / 1.5);
-                      config.recordPlayHandler.send({
-                        'message': {
-                          'request': 'configure',
-                          'video-bitrate-max': 360, // Reduce the bitrate
-                          'video-keyframe-interval': 15000 // Keep the 15 seconds key frame interval
-                        }
-                      });
+                  if (result) {
+                    var uplink = result["uplink"];
+                    if (uplink !== 0) {
+                      if (config.onWarning) config.onWarning(msg);
+                      // Janus detected issues when receiving our media, let's slow down
+                      if (!config.isShareScreenActive) {
+                        let bandwidth = parseInt(bandwidth / 1.5);
+                        config.recordPlayHandler.send({
+                          'message': {
+                            'request': 'configure',
+                            'video-bitrate-max': bandwidth > 720 ? 720 : bandwidth, // Reduce the bitrate
+                            'video-keyframe-interval': 15000 // Keep the 15 seconds key frame interval
+                          }
+                        });
+                      }
                     }
                   }
-                  // }
                 } else if (event === "destroyed") {
                   // The room has been destroyed
                   Janus.warn("The room has been destroyed!");
@@ -285,14 +281,14 @@ function start() {
                   // Any new feed to attach to?
                   if (msg["publishers"] !== undefined && msg["publishers"] !== null) {
                     var list = msg["publishers"];
-                    Janus.debug("Got a list of available publishers/feeds:");
-                    Janus.debug(list);
+                    // Janus.debug("Got a list of available publishers/feeds:");
+                    // Janus.debug(list);
                     for (var f in list) {
                       var id = list[f]["id"];
                       var display = list[f]["display"];
                       var audio = list[f]["audio_codec"];
                       var video = list[f]["video_codec"];
-                      Janus.debug("  >> [" + id + "] " + display + " (audio: " + audio + ", video: " + video + ")");
+                      // Janus.debug("  >> [" + id + "] " + display + " (audio: " + audio + ", video: " + video + ")");
                       newRemoteFeed(id, display, audio, video);
                     }
                   } else if (msg["leaving"] !== undefined && msg["leaving"] !== null) {
@@ -307,7 +303,7 @@ function start() {
                       }
                     }
                     if (remoteFeed != null) {
-                      Janus.debug("Feed " + remoteFeed.rfid + " (" + remoteFeed.rfdisplay + ") has left the room, detaching");
+                      // Janus.debug("Feed " + remoteFeed.rfid + " (" + remoteFeed.rfdisplay + ") has left the room, detaching");
                       config.feeds[remoteFeed.rfindex] = null;
                       remoteFeed.detach();
                     }
@@ -328,7 +324,7 @@ function start() {
                       }
                     }
                     if (remoteFeed != null) {
-                      Janus.debug("Feed " + remoteFeed.rfid + " (" + remoteFeed.rfdisplay + ") has left the room, detaching");
+                      // Janus.debug("Feed " + remoteFeed.rfid + " (" + remoteFeed.rfdisplay + ") has left the room, detaching");
                       config.feeds[remoteFeed.rfindex] = null;
                       remoteFeed.detach();
                     }
@@ -342,8 +338,8 @@ function start() {
                 }
               }
               if (jsep !== undefined && jsep !== null) {
-                Janus.debug("Handling SDP as well...");
-                Janus.debug(jsep);
+                // Janus.debug("Handling SDP as well...");
+                // Janus.debug(jsep);
                 config.videoRoomHandler.handleRemoteJsep({
                   jsep: jsep
                 });
@@ -352,33 +348,37 @@ function start() {
                 var audio = msg["audio_codec"];
                 if (config.mystream && config.mystream.getAudioTracks() && config.mystream.getAudioTracks().length > 0 && !audio) {
                   // Audio has been rejected
-                  Janus.debug("Our audio stream has been rejected, viewers won't hear us");
+                  // Janus.debug("Our audio stream has been rejected, viewers won't hear us");
                 }
                 var video = msg["video_codec"];
                 if (config.mystream && config.mystream.getVideoTracks() && config.mystream.getVideoTracks().length > 0 && !video) {
                   // Video has been rejected
-                  Janus.debug("Our video stream has been rejected, viewers won't see us");
+                  // Janus.debug("Our video stream has been rejected, viewers won't see us");
                   // Hide the webcam video
                 }
               }
             },
             onlocalstream: function (stream) {
-              Janus.debug(" ::: Got a local stream :::");
+              // Janus.debug(" ::: Got a local stream :::");
               config.mystream = window.mystream = stream; // attach to global for debugging purpose
               if (config.mystream.getVideoTracks().length > 0) {
                 config.mystream.getVideoTracks()[0].onended = function () {
                   if (config.isShareScreenActive && config.publishOwnFeed) {
                     console.log('Put back the webcam');
-                    publishOwnFeed({
-                      audioSend: true,
-                      videoSend: true,
-                      replaceVideo: true,
-                      replaceAudio: true,
-                    });
+                    config.onMessage({
+                      type: 'share',
+                      message: 'Put back the webcam'
+                    })
+                    // publishOwnFeed({
+                    //   audioSend: true,
+                    //   videoSend: true,
+                    //   replaceVideo: true,
+                    //   replaceAudio: true,
+                    // });
                   }
                 }
               }
-              Janus.debug(stream);
+              // Janus.debug(stream);
               config.onLocalJoin();
               if (config.onVolumeMeterUpdate) {
                 let ctx = new AudioContext();
@@ -427,8 +427,8 @@ function start() {
                 Janus.log("Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
               },
               onmessage: function (msg, jsep) {
-                Janus.debug(" ::: Got a message :::");
-                Janus.debug(msg);
+                // Janus.debug(" ::: Got a message :::");
+                // Janus.debug(msg);
                 config.videoRoomHandler.alive = true;
                 var result = msg["result"];
                 if (result !== null && result !== undefined) {
@@ -443,8 +443,8 @@ function start() {
                           videoSend: false
                         }, // We want recvonly audio/video
                         success: function (jsep) {
-                          Janus.debug("Got SDP!");
-                          Janus.debug(jsep);
+                          // Janus.debug("Got SDP!");
+                          // Janus.debug(jsep);
                           var body = {
                             "request": "start"
                           };
@@ -474,23 +474,23 @@ function start() {
                         config.recordingId = id;
                       }
                     } else if (event === 'slow_link') {
-                      // if (result) {
-                      // var uplink = result["uplink"];
-                      if (true) {
-                        if (config.onWarning) config.onWarning(msg);
-                        // Janus detected issues when receiving our media, let's slow down
-                        if (!config.isShareScreenActive) {
-                          // let bandwidth = parseInt(bandwidth / 1.5);
-                          config.recordPlayHandler.send({
-                            'message': {
-                              'request': 'configure',
-                              'video-bitrate-max': 360, // Reduce the bitrate
-                              'video-keyframe-interval': 15000 // Keep the 15 seconds key frame interval
-                            }
-                          });
+                      if (result) {
+                        var uplink = result["uplink"];
+                        if (uplink !== 0) {
+                          if (config.onWarning) config.onWarning(msg);
+                          // Janus detected issues when receiving our media, let's slow down
+                          if (!config.isShareScreenActive) {
+                            let bandwidth = parseInt(bandwidth / 1.5);
+                            config.recordPlayHandler.send({
+                              'message': {
+                                'request': 'configure',
+                                'video-bitrate-max': bandwidth > 720 ? 720 : bandwidth, // Reduce the bitrate
+                                'video-keyframe-interval': 15000 // Keep the 15 seconds key frame interval
+                              }
+                            });
+                          }
                         }
                       }
-                      // }
                     } else if (event === 'stopped' && result) {
                       Janus.log("Session has stopped!");
                       var id = result["id"];
@@ -512,14 +512,14 @@ function start() {
                 }
               },
               onlocalstream: function (stream) {
-                Janus.debug(" ::: Got a local stream :::");
-                Janus.debug(stream);
+                // Janus.debug(" ::: Got a local stream :::");
+                // Janus.debug(stream);
                 config.onRecordedPlay()
               },
               onremotestream: function (stream) {
                 config.recordedplaystream = stream;
-                Janus.debug(" ::: Got a remote stream :::");
-                Janus.debug(stream);
+                // // Janus.debug(" ::: Got a remote stream :::");
+                // // Janus.debug(stream);
                 config.onRecordedPlay()
               },
               oncleanup: function () {
@@ -534,7 +534,7 @@ function start() {
           if (config.videoRoomHandler) config.videoRoomHandler.alive = false;
           Janus.error(error);
           config.onError(error);
-          reject(error);
+          // reject(error);
         },
         destroyed: function () {
           console.log('Destroyed');
@@ -542,7 +542,7 @@ function start() {
         iceServers: config.iceServers,
       });
     } catch (err) {
-      reject(err);
+      // reject(err);
     }
   });
 }
@@ -551,7 +551,7 @@ function start() {
 function getVideoStream() {
   var config = {
     video: true,
-    audio: true
+    // audio: true
   };
   navigator.mediaDevices.getUserMedia(config)
     .then(function (s) {
@@ -572,7 +572,7 @@ function getRecorder() {
 };
 
 function videoDataHandler(event) {
-  console.log(event.data)
+  // console.log(event.data)
   // var reader = new FileReader();
   // reader.readAsArrayBuffer(event.data);
   // videoCounter++;
@@ -599,7 +599,7 @@ function newRemoteFeed(id, display, audio, video) {
         "room": config.room,
         "ptype": "subscriber",
         "feed": id,
-        "pin": '1234',
+        "pin": config.pin,
         "private_id": config.mypvtid
       };
       if (config.token) listen.token = config.token;
@@ -612,7 +612,7 @@ function newRemoteFeed(id, display, audio, video) {
         if (video) {
           video = video.toUpperCase()
         }
-        Janus.debug("Publisher is using " + video + ", but Safari doesn't support it: disabling video");
+        // // Janus.debug("Publisher is using " + video + ", but Safari doesn't support it: disabling video");
         listen["offer_video"] = false;
       }
       listen["offer_data"] = true;
@@ -636,11 +636,11 @@ function newRemoteFeed(id, display, audio, video) {
       config.onError("Error attaching plugin... " + error);
     },
     onmessage: function (msg, jsep) {
-      Janus.debug(" ::: Got a message (subscriber) :::");
-      Janus.debug(msg);
+      // // Janus.debug(" ::: Got a message (subscriber) :::");
+      // // Janus.debug(msg);
       config.videoRoomHandler.alive = true;
       var event = msg["videoroom"];
-      Janus.debug("Event: " + event);
+      // Janus.debug("Event: " + event);
       if (msg["error"] !== undefined && msg["error"] !== null) {
         config.onError(msg["error"]);
       } else if (event != undefined && event != null) {
@@ -680,8 +680,8 @@ function newRemoteFeed(id, display, audio, video) {
         }
       }
       if (jsep !== undefined && jsep !== null) {
-        Janus.debug("Handling SDP as well...");
-        Janus.debug(jsep);
+        // Janus.debug("Handling SDP as well...");
+        // Janus.debug(jsep);
         // Answer and attach
         remoteFeed.createAnswer({
           jsep: jsep,
@@ -693,8 +693,8 @@ function newRemoteFeed(id, display, audio, video) {
             data: true,
           }, // We want recvonly audio/video
           success: function (jsep) {
-            Janus.debug("Got SDP!");
-            Janus.debug(jsep);
+            // Janus.debug("Got SDP!");
+            // Janus.debug(jsep);
             var body = {
               "request": "start",
               "room": config.room
@@ -729,13 +729,12 @@ function newRemoteFeed(id, display, audio, video) {
       }
     },
     onremotestream: function (stream) {
-      Janus.debug("Remote feed #" + remoteFeed.rfindex);
-
+      // Janus.debug("Remote feed #" + remoteFeed.rfindex);
       config.remotestreams[remoteFeed.rfindex] = {}
       config.remotestreams[remoteFeed.rfindex].index = remoteFeed.rfindex;
       config.remotestreams[remoteFeed.rfindex].feedId = remoteFeed.getId();
       config.remotestreams[remoteFeed.rfindex].stream = stream;
-      config.onRemoteJoin(remoteFeed.rfindex, remoteFeed.rfdisplay, remoteFeed.getId());
+      config.onRemoteJoin(remoteFeed.rfindex, remoteFeed.rfdisplay, remoteFeed.getId(), remoteFeed.isRemoteVideoMuted());
       if (config.onVolumeMeterUpdate) {
         let ctx = new AudioContext();
         let meter = volumeMeter(ctx, {
@@ -782,6 +781,7 @@ class Room {
     window.remotestreams = config.remotestreams;
     // Assign the values
     config.pin = options.pin;
+    config.video = options.video || true;
     config.server = options.server || null;
     config.opaqueId = "videoroomtest-" + this.randomString(12);
     config.room = options.room || null;
@@ -801,8 +801,14 @@ class Room {
     config.onError = options.onError || null;
     config.onWarning = options.onWarning || null;
     config.iceServers = options.iceServers || [{
-      urls: "stun:stun.l.google.com:19302"
-    }];
+        urls: "stun:stun.l.google.com:19302"
+      },
+      {
+        url: "turn:52.64.84.10:3478",
+        username: "test",
+        credential: "Demo@123"
+      }
+    ];
   }
 
 
@@ -821,12 +827,12 @@ class Room {
                 resolve();
               })
               .catch((err) => {
-                reject(err);
+                // reject(err);
               });
           }
         });
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
@@ -843,16 +849,16 @@ class Room {
 
   stop() {
     if (config.janus) {
-      this.stopRecording();
+      // this.stopRecording();
       // Make sure the webcam and microphone got turned off first
       if (config.mystream) {
         let tracks = config.mystream.getTracks();
-        for (let i in tracks) {
-          if (tracks[i]) {
-            tracks[i].stop();
-          }
-        }
+        console.log(tracks);
+        tracks.forEach(element => {
+          element.stop()
+        });
       }
+      this.leavingRoom()
       // Destroy the session
       config.janus.destroy();
     }
@@ -870,7 +876,8 @@ class Room {
         config.username = options.username || config.username;
         config.room = options.room || config.room;
         config.pin = options.pin || config.pin;
-        console.log('--------------------------------------config', config);
+        config.video = options.video === 'false' ? false : true;
+
         var register = {
           "request": "join",
           "pin": config.pin,
@@ -878,13 +885,14 @@ class Room {
           "ptype": "publisher",
           "display": config.username
         };
+        console.log(config);
         if (config.token) register.token = config.token;
         config.videoRoomHandler.send({
           "message": register
         });
         resolve();
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
@@ -901,7 +909,7 @@ class Room {
         }
         resolve(config.videoRoomHandler.isAudioMuted());
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
@@ -918,17 +926,17 @@ class Room {
         }
         resolve(config.videoRoomHandler.isVideoMuted());
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
 
   toggleVideo() {
     return new Promise((resolve, reject) => {
-      let videoStopped = false;
-      let audioStopped = false;
+      let videoStopped = true;
+      let audioStopped = true;
       if (!config.mystream) {
-        reject('No local stream.');
+        // reject('No local stream.');
         return;
       } else {
         if (config.mystream.getVideoTracks().length > 0) {
@@ -938,10 +946,11 @@ class Room {
           audioStopped = config.mystream.getAudioTracks()[0].readyState === 'ended';
         }
       }
-      if (!videoStopped) {
+      if (!videoStopped && config.mystream.getVideoTracks().length > 0) {
         config.mystream.getVideoTracks()[0].stop();
       }
       if (config.publishOwnFeed) {
+        console.log('xxxxxxxxxxxxxx', audioStopped, videoStopped);
         publishOwnFeed({
           audioSend: !audioStopped,
           videoSend: videoStopped,
@@ -965,11 +974,11 @@ class Room {
             resolve(data);
           },
           error: function (err) {
-            reject(err);
+            // reject(err);
           },
         });
       } catch (err) {
-        reject(err)
+        // reject(err)
       }
     });
   }
@@ -988,7 +997,7 @@ class Room {
         }
         resolve();
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
@@ -1000,10 +1009,8 @@ class Room {
       try {
         if (index === 0) {
           tracks = config.mystream.getVideoTracks()
-          console.log('my track', tracks);
         } else if (config.remotestreams[index].stream) {
           tracks = config.remotestreams[index].stream.getVideoTracks()
-          console.log('remote track', tracks);
         }
         if (tracks && tracks[0] && tracks[0].label &&
           // Video tracks from webcam got labeled as "Integrated Camera" or "iSight"
@@ -1017,7 +1024,7 @@ class Room {
         }
         resolve(res)
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
@@ -1028,46 +1035,44 @@ class Room {
         Janus.attachMediaStream(target, config.recordedplaystream);
         resolve();
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
 
-  shareScreen() {
+  shareScreen(hasAudio, hasVideo) {
     return new Promise((resolve, reject) => {
       if (Janus.webRTCAdapter.browserDetails.browser === 'safari') {
-        reject(new Error('No video support for Safari browser.'));
+        // reject(new Error('No video support for Safari browser.'));
       }
       if (!config.publishOwnFeed) {
-        return reject();
+        return // reject();
       }
       try {
         unpublishOwnFeed()
         setTimeout(() => {
-          shareScreen((err) => {
-            if (err) {
-              reject(err)
-              return;
-            }
-            resolve();
-          });
+          shareScreen(hasAudio, hasVideo);
+          resolve();
         }, 500);
       } catch (err) {
-        reject(err);
+        console.log('share screen error')
+        // reject(err);
       }
     });
   }
 
-  stopShareScreen() {
+  stopShareScreen(hasAudio, hasVideo) {
+    console.log('------', hasAudio, hasVideo);
     return new Promise((resolve, reject) => {
       if (!config.publishOwnFeed) {
-        return reject();
+        return // reject();
       }
       try {
         unpublishOwnFeed()
         setTimeout(() => {
           publishOwnFeed({
-            audioSend: true,
+            audioSend: hasAudio,
+            videoSend: hasVideo,
             replaceVideo: true,
             replaceAudio: true,
           }, () => {
@@ -1075,7 +1080,7 @@ class Room {
           });
         }, 500);
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
@@ -1109,7 +1114,24 @@ class Room {
         // TODO catch the response
         resolve();
       } catch (err) {
-        reject(err);
+        // reject(err);
+      }
+    });
+  }
+
+  leavingRoom() {
+    return new Promise((resolve, reject) => {
+      try {
+        var body = {
+          "request": "leave",
+        };
+        if (config.token) body.token = config.token;
+        config.videoRoomHandler.send({
+          "message": body,
+        });
+        resolve();
+      } catch (err) {
+        // reject(err);
       }
     });
   }
@@ -1128,40 +1150,24 @@ class Room {
         });
         resolve();
       } catch (err) {
-        reject(err);
+        // reject(err);
       }
     });
   }
-
-  getVideoStream(id) {
-    var config = {
-      video: true,
-      audio: false
-    };
-    navigator.mediaDevices.getUserMedia(config)
-      .then(function (s) {
-        stream = s;
-        console.log('stream innnn,', s);
-        document.getElementById(id).setAttribute('src', window.URL.createObjectURL(s));
-        // getRecorder();
-        console.log('get video connection')
-        // createPeerConnection();
-      });
-  };
 
   getRecordedList() {
     return new Promise((resolve, reject) => {
       var body = {
         "request": "list"
       };
-      Janus.debug("Sending message (" + JSON.stringify(body) + ")");
+      // Janus.debug("Sending message (" + JSON.stringify(body) + ")");
       config.recordPlayHandler.send({
         "message": body,
         success: function (result) {
           resolve(result);
         },
         error: function (err) {
-          reject(err);
+          // reject(err);
         }
       });
     });
@@ -1193,12 +1199,12 @@ class Room {
                 resolve();
               },
               error: function (err) {
-                reject(err);
+                // reject(err);
               }
             });
           })
           .catch((err) => {
-            reject(err);
+            // reject(err);
           });
       } else {
         config.recordPlayHandler.send({
@@ -1207,7 +1213,7 @@ class Room {
             resolve();
           },
           error: function (err) {
-            reject(err);
+            // reject(err);
           }
         });
       }
@@ -1230,7 +1236,7 @@ class Room {
   //           resolve();
   //         },
   //         error: function(err) {
-  //           reject(err);
+  //           // reject(err);
   //         }
   //       });
   //     }
@@ -1245,11 +1251,11 @@ class Room {
           if (config.remotestreams[streamIndex]) {
             resolve(config.remotestreams[streamIndex].stream);
           } else {
-            reject(new Error('No such stream index: ' + streamIndex));
+            // reject(new Error('No such stream index: ' + streamIndex));
           }
         }
       } catch (e) {
-        reject(e);
+        // reject(e);
       }
     });
   }
@@ -1261,10 +1267,10 @@ class Room {
         } else if (config.videoRoomHandler && '' + streamIndex === '0') {
           resolve(config.videoRoomHandler.alive ? true : false);
         } else {
-          reject(new Error('No such stream index: ' + streamIndex));
+          // reject(new Error('No such stream index: ' + streamIndex));
         }
       } catch (e) {
-        reject(e);
+        // reject(e);
       }
     });
   }
