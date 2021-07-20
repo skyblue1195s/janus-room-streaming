@@ -258,23 +258,23 @@ function start() {
                   }
                 } else if (event === 'slow_link') {
                   // if (result) {
-                    var uplink = result["uplink"];
-                    var uplink = 1;
-                    if (uplink !== 0) {
-                      if (config.onWarning) config.onWarning(msg);
-                      // Janus detected issues when receiving our media, let's slow down
-                      if (!config.isShareScreenActive) {
-                        let bandwidth = parseInt(bandwidth / 1.5);
-                        console.log('------Bandwith', bandwidth)
-                        config.recordPlayHandler.send({
-                          'message': {
-                            'request': 'configure',
-                            'video-bitrate-max': 480, // Reduce the bitrate
-                            'video-keyframe-interval': 15000 // Keep the 15 seconds key frame interval
-                          }
-                        });
-                      }
+                  // var uplink = result["uplink"];
+                  var uplink = 1;
+                  if (uplink !== 0) {
+                    if (config.onWarning) config.onWarning(msg);
+                    // Janus detected issues when receiving our media, let's slow down
+                    if (!config.isShareScreenActive) {
+                      let bandwidth = parseInt(bandwidth / 1.5);
+                      console.log('------Bandwith', bandwidth)
+                      config.recordPlayHandler.send({
+                        'message': {
+                          'request': 'configure',
+                          'video-bitrate-max': 360, // Reduce the bitrate
+                          'video-keyframe-interval': 15000 // Keep the 15 seconds key frame interval
+                        }
+                      });
                     }
+                  }
                   // }
                 } else if (event === "destroyed") {
                   // The room has been destroyed
@@ -489,7 +489,7 @@ function start() {
                           config.recordPlayHandler.send({
                             'message': {
                               'request': 'configure',
-                              'video-bitrate-max': 480, // Reduce the bitrate
+                              'video-bitrate-max': 360, // Reduce the bitrate
                               'video-keyframe-interval': 15000 // Keep the 15 seconds key frame interval
                             }
                           });
