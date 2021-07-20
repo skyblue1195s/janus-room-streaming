@@ -264,7 +264,7 @@ function start() {
                     if (config.onWarning) config.onWarning(msg);
                     // Janus detected issues when receiving our media, let's slow down
                     if (!config.isShareScreenActive) {
-                      let bandwidth = parseInt(bandwidth / 1.5);
+                      // let bandwidth = parseInt(bandwidth / 1.5);
                       console.log('------Bandwith', bandwidth)
                       config.recordPlayHandler.send({
                         'message': {
@@ -485,7 +485,7 @@ function start() {
                         if (config.onWarning) config.onWarning(msg);
                         // Janus detected issues when receiving our media, let's slow down
                         if (!config.isShareScreenActive) {
-                          let bandwidth = parseInt(bandwidth / 1.5);
+                          // let bandwidth = parseInt(bandwidth / 1.5);
                           config.recordPlayHandler.send({
                             'message': {
                               'request': 'configure',
