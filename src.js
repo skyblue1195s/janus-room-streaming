@@ -980,7 +980,7 @@ class Room {
         if (index === 0) {
           Janus.attachMediaStream(target, config.mystream);
           // multiStreamRecorder.stream = config.mystream
-          multiStreamRecorder.addStream(multiStreamRecorder.stream)
+          // multiStreamRecorder.addStream(multiStreamRecorder.stream)
         } else {
           Janus.attachMediaStream(target, config.remotestreams[index].stream);
           // multiStreamRecorder.addStream(config.remotestreams[index].stream)
