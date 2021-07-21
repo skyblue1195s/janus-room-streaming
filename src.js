@@ -256,8 +256,8 @@ function start() {
                     }
                   }
                 } else if (event === 'slow_link') {
-                  if (result) {
-                    var uplink = result["uplink"];
+                  if (true) {
+                    var uplink = 1
                     if (uplink !== 0) {
                       if (config.onWarning) config.onWarning(msg);
                       // Janus detected issues when receiving our media, let's slow down
@@ -266,7 +266,7 @@ function start() {
                         config.recordPlayHandler.send({
                           'message': {
                             'request': 'configure',
-                            'video-bitrate-max': bandwidth > 720 ? 720 : bandwidth, // Reduce the bitrate
+                            'video-bitrate-max': 360, // Reduce the bitrate
                             'video-keyframe-interval': 15000 // Keep the 15 seconds key frame interval
                           }
                         });
@@ -474,8 +474,8 @@ function start() {
                         config.recordingId = id;
                       }
                     } else if (event === 'slow_link') {
-                      if (result) {
-                        var uplink = result["uplink"];
+                      if (true) {
+                        var uplink = 1
                         if (uplink !== 0) {
                           if (config.onWarning) config.onWarning(msg);
                           // Janus detected issues when receiving our media, let's slow down
@@ -484,7 +484,7 @@ function start() {
                             config.recordPlayHandler.send({
                               'message': {
                                 'request': 'configure',
-                                'video-bitrate-max': bandwidth > 720 ? 720 : bandwidth, // Reduce the bitrate
+                                'video-bitrate-max': 360, // Reduce the bitrate
                                 'video-keyframe-interval': 15000 // Keep the 15 seconds key frame interval
                               }
                             });
