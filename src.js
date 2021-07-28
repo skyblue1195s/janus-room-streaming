@@ -599,7 +599,7 @@ function newRemoteFeed(id, display, audio, video) {
         "room": config.room,
         "ptype": "subscriber",
         "feed": id,
-        "pin": '1234',
+        "pin": config.pin,
         "private_id": config.mypvtid
       };
       if (config.token) listen.token = config.token;
