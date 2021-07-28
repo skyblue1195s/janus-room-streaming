@@ -734,7 +734,7 @@ function newRemoteFeed(id, display, audio, video) {
       config.remotestreams[remoteFeed.rfindex].index = remoteFeed.rfindex;
       config.remotestreams[remoteFeed.rfindex].feedId = remoteFeed.getId();
       config.remotestreams[remoteFeed.rfindex].stream = stream;
-      config.onRemoteJoin(remoteFeed.rfindex, remoteFeed.rfdisplay, remoteFeed.getId(), remoteFeed.isRemoteVideoMuted());
+      config.onRemoteJoin(remoteFeed.rfindex, remoteFeed.rfdisplay, remoteFeed.getId());
       if (config.onVolumeMeterUpdate) {
         let ctx = new AudioContext();
         let meter = volumeMeter(ctx, {
