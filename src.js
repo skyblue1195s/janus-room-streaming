@@ -803,7 +803,6 @@ class Room {
     config.iceServers = options.iceServers || [{
         urls: "stun:stun.l.google.com:19302"
       },
-
       {
         url: "turn:52.64.84.10:3478",
         username: "test",
