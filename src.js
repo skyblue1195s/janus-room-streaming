@@ -859,8 +859,10 @@ class Room {
         });
       }
       this.leavingRoom()
-      // Destroy the session
-      config.janus.destroy();
+      setTimeout(() => {
+        // Destroy the session
+        config.janus.destroy();
+      }, 1000);
     }
   }
 
@@ -1129,9 +1131,11 @@ class Room {
         config.videoRoomHandler.send({
           "message": body,
         });
+
         resolve();
       } catch (err) {
-        // reject(err);
+        console.log('-------leaving error', err);
+        reject(err);
       }
     });
   }
