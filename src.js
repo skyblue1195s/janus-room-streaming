@@ -34,7 +34,7 @@ function publishOwnFeed(opts, cb) {
       videoRecv: false,
       audioSend: opts.audioSend,
       replaceAudio: opts.replaceAudio,
-      videoSend: Janus.webRTCAdapter.browserDetails.browser === 'safari' ? false : (opts.videoSend ? opts.videoSend : false),
+      videoSend: opts.videoSend ? opts.videoSend : false,
       replaceVideo: opts.replaceVideo,
       data: true,
     }, // Publishers are sendonly
@@ -45,7 +45,7 @@ function publishOwnFeed(opts, cb) {
       var publish = {
         "request": "configure",
         "audio": opts.audioSend,
-        "video": Janus.webRTCAdapter.browserDetails.browser === 'safari' ? false : (opts.videoSend ? opts.videoSend : false),
+        "video": opts.videoSend ? opts.videoSend : false,
         "data": true,
       };
       if (config.token) publish.token = config.token;
@@ -613,7 +613,7 @@ function newRemoteFeed(id, display, audio, video) {
           video = video.toUpperCase()
         }
         // // Janus.debug("Publisher is using " + video + ", but Safari doesn't support it: disabling video");
-        listen["offer_video"] = false;
+        // listen["offer_video"] = false;
       }
       listen["offer_data"] = true;
       remoteFeed.videoCodec = video;
