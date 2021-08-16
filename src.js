@@ -1058,7 +1058,7 @@ class Room {
           resolve();
         }, 500);
       } catch (err) {
-        console.log('share screen error')
+        console.log('Share screen error')
         // reject(err);
       }
     });
