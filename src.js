@@ -120,6 +120,7 @@ function shareScreen(hasAudio, hasVideo, cb) {
     },
     error: function (error) {
       Janus.error("WebRTC error:", error);
+      config.onError('share screen error')
       if (cb) {
         cb(error);
       }
