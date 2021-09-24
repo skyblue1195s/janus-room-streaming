@@ -229,7 +229,7 @@ function start() {
               // Janus.debug(jsep);
               config.videoRoomHandler.alive = true;
               var event = msg["videoroom"];
-              var result = msg['result']
+              var result = msg["result"];
               // Janus.debug("Event: " + event);
               if (event != undefined && event != null) {
                 if (event === "joined" && !config.isShareScreenActive) {
