@@ -1235,7 +1235,7 @@ function Janus(gatewayCallbacks) {
 						muteAudio : function() { return mute(handleId, false, true); },
 						unmuteAudio : function() { return mute(handleId, false, false); },
 						isVideoMuted : function() { return isMuted(handleId, true); },
-						isRemoteVideoMuted : function() { return isMuted(handleId, true); },
+						isRemoteVideoMuted : function() { return isRemoteMuted(handleId, true); },
 						muteVideo : function() { return mute(handleId, true, true); },
 						unmuteVideo : function() { return mute(handleId, true, false); },
 						getBitrate : function() { return getBitrate(handleId); },
@@ -1321,7 +1321,7 @@ function Janus(gatewayCallbacks) {
 						muteAudio : function() { return mute(handleId, false, true); },
 						unmuteAudio : function() { return mute(handleId, false, false); },
 						isVideoMuted : function() { return isMuted(handleId, true); },
-						isRemoteVideoMuted : function() { return isMuted(handleId, true); },
+						isRemoteVideoMuted : function() { return isRemoteMuted(handleId, true); },
 						muteVideo : function() { return mute(handleId, true, true); },
 						unmuteVideo : function() { return mute(handleId, true, false); },
 						getBitrate : function() { return getBitrate(handleId); },
@@ -2079,6 +2079,7 @@ function Janus(gatewayCallbacks) {
 				}, callbacks.error);
 		}
 	}
+
 
 	function prepareWebrtc(handleId, offer, callbacks) {
 		callbacks = callbacks || {};
