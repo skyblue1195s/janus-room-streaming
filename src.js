@@ -1072,7 +1072,7 @@ class Room {
         unpublishOwnFeed()
         setTimeout(() => {
           publishOwnFeed({
-            audioSend: hasAudio,
+            audioSend: true,
             videoSend: hasVideo,
             replaceVideo: true,
             replaceAudio: true,
