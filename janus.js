@@ -1235,7 +1235,6 @@ function Janus(gatewayCallbacks) {
 						muteAudio : function() { return mute(handleId, false, true); },
 						unmuteAudio : function() { return mute(handleId, false, false); },
 						isVideoMuted : function() { return isMuted(handleId, true); },
-						isRemoteVideoMuted : function() { return isRemoteMuted(handleId, true);; },
 						muteVideo : function() { return mute(handleId, true, true); },
 						unmuteVideo : function() { return mute(handleId, true, false); },
 						getBitrate : function() { return getBitrate(handleId); },
@@ -1321,7 +1320,6 @@ function Janus(gatewayCallbacks) {
 						muteAudio : function() { return mute(handleId, false, true); },
 						unmuteAudio : function() { return mute(handleId, false, false); },
 						isVideoMuted : function() { return isMuted(handleId, true); },
-						isRemoteVideoMuted : function() { return isRemoteMuted(handleId, true);; },
 						muteVideo : function() { return mute(handleId, true, true); },
 						unmuteVideo : function() { return mute(handleId, true, false); },
 						getBitrate : function() { return getBitrate(handleId); },
@@ -3344,40 +3342,6 @@ function Janus(gatewayCallbacks) {
 		}
 		pluginHandle.oncleanup();
 	}
-
-	// check remote muted
-	function isRemoteMuted(handleId, video) {
-		var pluginHandle = pluginHandles[handleId];
-		if (!pluginHandle || !pluginHandle.webrtcStuff) {
-		  Janus.warn("Invalid handle");
-		  return true;
-		}
-		var config = pluginHandle.webrtcStuff;
-		if (!config.pc) {
-		  Janus.warn("Invalid PeerConnection");
-		  return true;
-		}
-		if (!config.remoteStream) {
-		  Janus.warn("Invalid local MediaStream");
-		  return true;
-		}
-		if (video) {
-		  // Check video track
-		  if (!config.remoteStream.getVideoTracks() || config.remoteStream.getVideoTracks().length === 0) {
-			Janus.warn("No video track");
-			return true;
-		  }
-		  return !config.remoteStream.getVideoTracks()[0].enabled;
-		} else {
-		  // Check audio track
-		  if (!config.remoteStream.getAudioTracks() || config.remoteStream.getAudioTracks().length === 0) {
-			Janus.warn("No audio track");
-			return true;
-		  }
-		  return !config.remoteStream.getAudioTracks()[0].enabled;
-		}
-	  }
-
 
 	// Helper method to munge an SDP to enable simulcasting (Chrome only)
 	function mungeSdpForSimulcasting(sdp) {
