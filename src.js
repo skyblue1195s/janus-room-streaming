@@ -1063,7 +1063,6 @@ class Room {
   }
 
   stopShareScreen(hasAudio, hasVideo) {
-    console.log('------', hasAudio, hasVideo);
     return new Promise((resolve, reject) => {
       if (!config.publishOwnFeed) {
         return // reject();
