@@ -32,7 +32,7 @@ function publishOwnFeed(opts, cb) {
     media: {
       audioRecv: false,
       videoRecv: false,
-      audioSend: opts.audioSend,
+      audioSend: opts.audioSend ? opts.audioSend : false,
       replaceAudio: opts.replaceAudio,
       videoSend: opts.videoSend ? opts.videoSend : false,
       replaceVideo: opts.replaceVideo,
@@ -44,7 +44,7 @@ function publishOwnFeed(opts, cb) {
       // Janus.debug(jsep);
       var publish = {
         "request": "configure",
-        "audio": opts.audioSend,
+        "audio": opts.audioSend ? opts.audioSend : false,
         "video": opts.videoSend ? opts.videoSend : false,
         "data": true,
       };
