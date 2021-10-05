@@ -371,12 +371,12 @@ function start() {
                       type: 'share',
                       message: 'Put back the webcam'
                     })
-                    // publishOwnFeed({
-                    //   audioSend: true,
-                    //   videoSend: true,
-                    //   replaceVideo: true,
-                    //   replaceAudio: true,
-                    // });
+                    publishOwnFeed({
+                      audioSend: true,
+                      videoSend: true,
+                      replaceVideo: true,
+                      replaceAudio: true,
+                    });
                   }
                 }
               }
@@ -748,9 +748,6 @@ function newRemoteFeed(id, display, audio, video) {
         });
         let src = ctx.createMediaStreamSource(config.remotestreams[remoteFeed.rfindex].stream);
         src.connect(meter);
-
-
-
         config.remotestreams[remoteFeed.rfindex].stream.onended = meter.stop.bind(meter);
         config.remotestreams[remoteFeed.rfindex].feed = remoteFeed;
       }
