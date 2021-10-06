@@ -314,7 +314,8 @@ function start() {
                       // Janus.debug("Feed " + remoteFeed.rfid + " (" + remoteFeed.rfdisplay + ") has left the room, detaching");
                       config.feeds[remoteFeed.rfindex] = null;
                       remoteFeed.detach();
-                      if (botFeed && botFeed.rfdisplay === 'panelist_bot') {
+                      const url = window.location.href
+                      if (botFeed && botFeed.rfdisplay === 'panelist_bot' && url.includes('round-table')) {
                         window.location.reload()
                       }
                     }
@@ -342,7 +343,8 @@ function start() {
                       // Janus.debug("Feed " + remoteFeed.rfid + " (" + remoteFeed.rfdisplay + ") has left the room, detaching");
                       config.feeds[remoteFeed.rfindex] = null;
                       remoteFeed.detach();
-                      if (botFeed && botFeed.rfdisplay === 'panelist_bot') {
+                      const url = window.location.href
+                      if (botFeed && botFeed.rfdisplay === 'panelist_bot' && url.includes('round-table')) {
                         window.location.reload()
                       }
                     }
