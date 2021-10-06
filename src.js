@@ -299,16 +299,24 @@ function start() {
                     var leaving = msg["leaving"];
                     Janus.log("Publisher left: " + leaving);
                     var remoteFeed = null;
+                    var botFeed = null;
                     for (var i = 1; i < 6; i++) {
                       if (config.feeds[i] != null && config.feeds[i] != undefined && config.feeds[i].rfid == leaving) {
                         remoteFeed = config.feeds[i];
                         break;
+                      }
+
+                      if (config.feeds[i].rfdisplay === 'panelist_bot') {
+                        botFeed = config.feeds[i];
                       }
                     }
                     if (remoteFeed != null) {
                       // Janus.debug("Feed " + remoteFeed.rfid + " (" + remoteFeed.rfdisplay + ") has left the room, detaching");
                       config.feeds[remoteFeed.rfindex] = null;
                       remoteFeed.detach();
+                      if (botFeed && botFeed.rfdisplay === 'panelist_bot') {
+                        window.location.reload()
+                      }
                     }
                   } else if (msg["unpublished"] !== undefined && msg["unpublished"] !== null) {
                     // One of the publishers has unpublished?
@@ -320,16 +328,23 @@ function start() {
                       return;
                     }
                     var remoteFeed = null;
+                    var botFeed = null;
                     for (var i = 1; i < 6; i++) {
                       if (config.feeds[i] != null && config.feeds[i] != undefined && config.feeds[i].rfid == unpublished) {
                         remoteFeed = config.feeds[i];
                         break;
+                      }
+                      if (config.feeds[i].rfdisplay === 'panelist_bot') {
+                        botFeed = config.feeds[i];
                       }
                     }
                     if (remoteFeed != null) {
                       // Janus.debug("Feed " + remoteFeed.rfid + " (" + remoteFeed.rfdisplay + ") has left the room, detaching");
                       config.feeds[remoteFeed.rfindex] = null;
                       remoteFeed.detach();
+                      if (botFeed && botFeed.rfdisplay === 'panelist_bot') {
+                        window.location.reload()
+                      }
                     }
                   } else if (msg["error"] !== undefined && msg["error"] !== null) {
                     if (msg["error_code"] === 426) {
