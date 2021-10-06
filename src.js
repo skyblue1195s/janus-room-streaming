@@ -1068,6 +1068,7 @@ class Room {
         return // reject();
       }
       try {
+        config.isShareScreenActive = false;
         unpublishOwnFeed()
         setTimeout(() => {
           publishOwnFeed({
