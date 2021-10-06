@@ -851,6 +851,7 @@ class Room {
     if (config.janus) {
       // this.stopRecording();
       // Make sure the webcam and microphone got turned off first
+      config.isShareScreenActive = false;
       if (config.mystream) {
         let tracks = config.mystream.getTracks();
         console.log(tracks);
@@ -1069,7 +1070,6 @@ class Room {
         return // reject();
       }
       try {
-        config.isShareScreenActive = false;
         unpublishOwnFeed()
         setTimeout(() => {
           publishOwnFeed({
