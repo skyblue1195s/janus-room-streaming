@@ -32,7 +32,7 @@ function publishOwnFeed(opts, cb) {
     media: {
       audioRecv: false,
       videoRecv: false,
-      audioSend: opts.audioSend ? opts.audioSend : false,
+      audioSend: opts.audioSend,
       replaceAudio: opts.replaceAudio,
       videoSend: opts.videoSend ? opts.videoSend : false,
       replaceVideo: opts.replaceVideo,
@@ -44,7 +44,7 @@ function publishOwnFeed(opts, cb) {
       // Janus.debug(jsep);
       var publish = {
         "request": "configure",
-        "audio": opts.audioSend ? opts.audioSend : false,
+        "audio": opts.audioSend,
         "video": opts.videoSend ? opts.videoSend : false,
         "data": true,
       };
@@ -59,6 +59,7 @@ function publishOwnFeed(opts, cb) {
     },
     error: function (error) {
       Janus.error("WebRTC error:", error);
+      console.log('GO Live ERRROR', error);
       if (opts && opts.audioSend) {
         publishOwnFeed({
           audioSend: false
