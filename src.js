@@ -299,15 +299,10 @@ function start() {
                     var leaving = msg["leaving"];
                     Janus.log("Publisher left: " + leaving);
                     var remoteFeed = null;
-                    var botFeed = null;
                     for (var i = 1; i < 6; i++) {
                       if (config.feeds[i] != null && config.feeds[i] != undefined && config.feeds[i].rfid == leaving) {
                         remoteFeed = config.feeds[i];
                         break;
-                      }
-
-                      if (config.feeds[i] != null && config.feeds[i] != undefined && config.feeds[i].rfdisplay === 'panelist_bot') {
-                        botFeed = config.feeds[i];
                       }
                     }
                     if (remoteFeed != null) {
@@ -315,7 +310,7 @@ function start() {
                       config.feeds[remoteFeed.rfindex] = null;
                       remoteFeed.detach();
                       const url = window.location.href
-                      if (botFeed && botFeed.rfdisplay === 'panelist_bot' && url.includes('round-table')) {
+                      if (url.includes('round-table')) {
                         window.location.reload()
                       }
                     }
@@ -329,14 +324,10 @@ function start() {
                       return;
                     }
                     var remoteFeed = null;
-                    var botFeed = null;
                     for (var i = 1; i < 6; i++) {
                       if (config.feeds[i] != null && config.feeds[i] != undefined && config.feeds[i].rfid == unpublished) {
                         remoteFeed = config.feeds[i];
                         break;
-                      }
-                      if (config.feeds[i] != null && config.feeds[i] != undefined && config.feeds[i].rfdisplay === 'panelist_bot') {
-                        botFeed = config.feeds[i];
                       }
                     }
                     if (remoteFeed != null) {
@@ -344,7 +335,7 @@ function start() {
                       config.feeds[remoteFeed.rfindex] = null;
                       remoteFeed.detach();
                       const url = window.location.href
-                      if (botFeed && botFeed.rfdisplay === 'panelist_bot' && url.includes('round-table')) {
+                      if (url.includes('round-table')) {
                         window.location.reload()
                       }
                     }
