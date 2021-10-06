@@ -306,7 +306,7 @@ function start() {
                         break;
                       }
 
-                      if (config.feeds[i].rfdisplay === 'panelist_bot') {
+                      if (config.feeds[i] != null && config.feeds[i] != undefined && config.feeds[i].rfdisplay === 'panelist_bot') {
                         botFeed = config.feeds[i];
                       }
                     }
@@ -334,7 +334,7 @@ function start() {
                         remoteFeed = config.feeds[i];
                         break;
                       }
-                      if (config.feeds[i].rfdisplay === 'panelist_bot') {
+                      if (config.feeds[i] != null && config.feeds[i] != undefined && config.feeds[i].rfdisplay === 'panelist_bot') {
                         botFeed = config.feeds[i];
                       }
                     }
